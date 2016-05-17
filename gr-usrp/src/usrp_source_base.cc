@@ -1,19 +1,19 @@
 /* -*- c++ -*- */
 /*
- * Copyright 2004,2008,2009 Free Software Foundation, Inc.
- * 
+ * Copyright 2004,2008 Free Software Foundation, Inc.
+ *
  * This file is part of GNU Radio
- * 
+ *
  * GNU Radio is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * GNU Radio is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with GNU Radio; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -88,7 +88,14 @@ usrp_source_base::work (int noutput_items,
   int bytes_read;
   bool overrun;
 
-  while (output_index < noutput_items){
+  //Changes
+  //1. Remove while loop, just do one call to the kernel
+  //2. Edit out short read reminder
+  //3. Return output_index, not noutput_items
+
+
+
+  //while (output_index < noutput_items){
     int nbytes = ninput_bytes_reqd_for_noutput_items (noutput_items - output_index);
     nbytes = std::min (nbytes, BUFSIZE);
 
@@ -102,10 +109,10 @@ usrp_source_base::work (int noutput_items,
     if (result_nbytes < 0)	// We've got a problem.  Usually board unplugged or powered down.
       return -1;		// Indicate we're done.
 
-    if (result_nbytes != nbytes){	// not really an error, but unexpected
-      fprintf (stderr, "usrp_source: short read.  Expected %d, got %d\n",
-	       nbytes, result_nbytes);
-    }
+    //if (result_nbytes != nbytes){	// not really an error, but unexpected
+    //  fprintf (stderr, "usrp_source: short read.  Expected %d, got %d\n",
+    //       nbytes, result_nbytes);
+    //}
 
     copy_from_usrp_buffer (output_items,
 			   output_index,
@@ -119,9 +126,10 @@ usrp_source_base::work (int noutput_items,
     assert (bytes_read == result_nbytes);
 
     output_index += output_items_produced;
-  }
+    //}
 
-  return noutput_items;
+    //return noutput_items;
+    return output_index;
 }
 
 
@@ -245,7 +253,7 @@ usrp_source_base::has_rx_halfband()
 {
   return d_usrp->has_rx_halfband();
 }
- 
+
 bool
 usrp_source_base::has_tx_halfband()
 {
@@ -292,10 +300,6 @@ usrp_source_base::pick_rx_subdevice()
     USRP_DBID_FLEX_2400_RX,
     USRP_DBID_TV_RX,
     USRP_DBID_TV_RX_REV_2,
-    USRP_DBID_TV_RX_REV_3,
-    USRP_DBID_TV_RX_MIMO,
-    USRP_DBID_TV_RX_REV_2_MIMO,
-    USRP_DBID_TV_RX_REV_3_MIMO,
     USRP_DBID_DBS_RX,
     USRP_DBID_BASIC_RX
   };
